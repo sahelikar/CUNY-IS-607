@@ -163,31 +163,16 @@ myFactorial(12)
 
 
 #Question 14
-coumpounInterest<-function(numYear, principal, roi){
-  monthList<-c(1:12)
-  dayNum<-c(31,28,31,30,31,30,31,31,30,31,30,31)
-  monthdf<-data.frame(monthList, dayNum)
-  countNum<-numYear*12
-  interest<-0.0
-  
-  for(i in 1:countNum){
-    if(i%%12==0){
-      monthlyInterest<-principal*roi*monthdf[12, 2]/365/100
-    }
-    else{
-      monthlyInterest<-principal*roi*monthdf[i%%12, 2]/365/100
-    }
-    interest<-(interest+monthlyInterest)
+finalBalance<-function(principal, time, roi){
+  Bal.Amount <- principal
+  for (i in 1:(12*time)) {
+    Bal.Amount <- Bal.Amount + (Bal.Amount * roi) /(12 * 100)
   }
-  
-  return(ceiling(interest))
+  print (round(Bal.Amount,2))
 }
 
-
-coumpounInterest(6,1500,6.24)
-#Result:
-562
-
+finalBalance(1500, 6, 3.24)
+#Result:1821.4
 
 
 #question 15
