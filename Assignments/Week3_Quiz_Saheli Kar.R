@@ -232,7 +232,6 @@ subset(MergedDataLeft, Year=="2010")
 # 21        2310 22 Silver   57672 10200   Ford Explorer 2010
 # 22        2310 23  Black   53942 10600   Ford Explorer 2010
 # 23        2310 28  White   37107 12300   Ford Explorer 2010
-# NA          NA NA   <NA>      NA    NA   <NA>     <NA>   NA
 
 
 
