@@ -85,6 +85,8 @@ decide<-function(inputDf){
 
 
 # Results
+
+# data1<- read.csv(file.choose(), header=TRUE)
 # entropy(as.vector(data1[,4]))
 # [1] 0.9832692
 
