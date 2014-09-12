@@ -62,21 +62,44 @@ infogain<-function(vector, partition){
 
 
 ## Part 3 - @inputDf is a data frame that has number of partition attributes and a traget. 
-## It returns the maximum infogain from one of the partition and a vector infogain values from all the partitions in a list.
+## It returns the column number of the partition vector for which the infogain is max
+## and a vector infogain values from all the partitions in a list.
 decide<-function(inputDf){
   maxInfoGain<-0 # the variable that will hold the max infogain value by one of the partition vector
-
+  columnNum<-0
   infoGainVector<-c() # the vector that will hold the infogain values for each partition
-  
+  columnNum
   for(i in 1:(length(inputDf)-1)){ #looping through all the partition to calculate the max infogain and the individual infogains
   
     igain<-infogain(as.vector(inputDf[,length(inputDf)]), as.vector(inputDf[,i]))
     infoGainVector<-c(infoGainVector, igain)
     if(igain>maxInfoGain){
       maxInfoGain<-igain
+      columnNum<-i
     }
   }
   
   return(list(columnNum, infoGainVector))
   
 }
+
+
+# Results
+# entropy(as.vector(data1[,4]))
+# [1] 0.9832692
+
+# infogain(as.vector(data1[,4]), as.vector(data1[,1]))
+# [1] 2.411565e-05
+
+# infogain(as.vector(data1[,4]), as.vector(data1[,2]))
+# [1] 0.2599038
+
+# infogain(as.vector(data1[,4]), as.vector(data1[,3]))
+# [1] 0.002432707
+
+# decide(data1)
+#[[1]]
+#[1] 2
+
+#[[2]]
+#[1] 2.411565e-05 2.599038e-01 2.432707e-03
