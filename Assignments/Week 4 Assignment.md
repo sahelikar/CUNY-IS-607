@@ -27,7 +27,7 @@ require(dplyr)
 ```r
 require(plyr)
 
-movie <- read.table("C:\\Users\\sonatushi\\Google Drive\\CUNY Data Analytics\\IS-607\\movies.tab", sep="\t", header=TRUE, quote="", comment="")
+movie <- read.table("movies.tab", sep="\t", header=TRUE, quote="", comment="")
 
 s<-subset(movie, votes>1000)
 
