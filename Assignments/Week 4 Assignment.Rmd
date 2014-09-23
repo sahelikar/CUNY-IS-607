@@ -1,0 +1,48 @@
+# Week 4 Assignment - Saheli Kar
+========================================================
+
+## Algorithm
+
+
+* Considering those movies that is voted over 1000 to be popular. So get the subset of the movies with vote greater than 1000<br/>
+**Note:**
+Identifying a movie as popular which got most of the votes. To me a movie which is rated highest is a good movie but that doesn't prove that is popular to the audience.
+
+* Select Movies title and year from the movie data frame.
+
+* Form a data frame with the columns year and the number of the distinct values of the year in the selected data frame from previuos step
+
+* Arrange  the list from previous step with respect to the count of distinct values in descening order. The year on top is the one which produced most number of popular movies.
+
+## R code
+```{r message=FALSE}
+require(dplyr)
+require(plyr)
+
+movie <- read.table("movies.tab", sep="\t", header=TRUE, quote="", comment="")
+
+s<-subset(movie, votes>1000)
+
+s1<-select(s, c( year))
+
+s1<-data.frame(s1, count=c(rep(1, times=length(s1$year))))
+
+a<-aggregate(count~year, s1, sum)
+
+output<-arrange(a, desc(count))
+
+head(output)
+
+```
+
+## Plotting the count of poular movies with respect to year
+```{r}
+plot(output)
+```
+
+```{r fig.height=7}
+require(ggplot2)
+ggplot(data = output) + geom_area (aes(x = year, y=count ))+ ggtitle("Popular movies count")
+
+```
+
