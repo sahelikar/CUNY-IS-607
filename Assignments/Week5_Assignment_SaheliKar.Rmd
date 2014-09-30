@@ -1,0 +1,60 @@
+# Week 5 Assignment by Saheli Kar
+========================================================
+## Answer 1
+1. How many voters are over 25?
+2. How many voters voted prefferred Partan bree?
+3. What are the average number of voters from both the towns who preffered Cullen skink?
+
+
+## Answer 2
+```{r}
+require(dplyr)
+preference<-c("Cullen skink", "Partan bree")
+
+Edinburg<-data.frame(c(80100,35900 ), c(143000, 214800))
+
+Glasgow<-data.frame(c(99400, 43000), c(150400, 207000))
+
+messyData<-data.frame(preference, Edinburg, Glasgow)
+
+names(messyData)<-c("preference", "Edinburg.16to24", "Edinburg.25plus", "Glasgow.16to24", "Glasgow.25plus")
+
+show(messyData)
+
+```
+
+## Answer 3
+
+```{r}
+require(dplyr)
+require(tidyr)
+
+tidyData<-messyData %>%
+gather(key, value, Edinburg.16to24, Edinburg.25plus, Glasgow.16to24, Glasgow.25plus) %>%
+separate(key, c("City", "Age"))
+
+show(tidyData)
+```
+
+## Answer 4
+```{r}
+AllVotersOver25<-aggregate(value~Age, tidyData, sum) %>%
+subset(Age=="25plus", select=value)
+show(AllVotersOver25)
+
+prefferedParatnBree<-aggregate(value~preference, tidyData, sum) %>%
+subset(preference=="Partan bree", select=value)
+show(prefferedParatnBree)
+
+avgVoterCullenSkink<-aggregate(value~preference, tidyData, sum) %>%
+subset(preference=="Cullen skink", select=value)/length(unique(tidyData$City)) 
+show(avgVoterCullenSkink)
+
+```
+
+## Answer 5
+Yes I can think of more questions from the datasets like:
+
+1. Show the list of count all voters from both the towns who are within the age 16-24
+2. Select the count of all the voters from Edinburg who voted for Partan bree and age is 25+
+3. We can build many more questions like this.
