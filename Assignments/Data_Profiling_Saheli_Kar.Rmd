@@ -1,0 +1,106 @@
+Data profiling project - Saheli Kar
+========================================================
+
+## Part 1: 
+I am choosing a data set of Real Estate. The csv file is shared in the GitHub.
+
+```{r}
+RealEstateDf<-data1<- read.csv(file.choose(), header=TRUE)
+head(RealEstateDf)
+```
+
+## Part 2:
+
+### The variables in the Sacramento Real Estate data sets are: 
+<b>street - </b>  The street address of the property. <br/>
+<b>city - </b> The city where the property is located. <br/>
+<b>zip - </b> The zip code of the property. <br/>
+<b>state - </b>The state where the property is located. <br/>
+<b>beds - </b> The number of bedrooms in the property. <br/>
+<b>baths - </b> The number of bathrooms in the property. <br/>
+<b>sq__ft - </b> The area of the property in square feet. <br/>
+<b>type - </b> The type of the property whether it is Residential/Condominium/ Multifamily <br/>
+<b>sale_date - </b> The date when the property is sold. <br/>
+<b>price - </b> The price of the propert sold. <br/>
+<b>latitude - </b> The latitude loaction of the property.<br/>
+<b>longitude - </b> The longitude location of the property. <br/>
+
+### The correaltion of the variables are provided with ggpairs()
+
+```{r fig.width=20, fig.height=20}
+
+#install.package(psych)
+#require(psych)
+#pairs(~zip+beds+baths+sq__ft+type+sale_date+price, data=RealEstateDf)
+
+install.packages("GGally")
+require(GGally)
+
+ggpairs(data=RealEstateDf, columns=c("zip", "beds", "baths", "sq__ft", "type", "sale_date", "price"))
+
+```
+
+Above we can see the correlation between the variables:<br/>
+zip, beds, baths, sq__ft, type, sale_date, price<br/><br.>
+
+Interesting correlation to be noted:
+* Most of the 2 and 4 bedrooms property are sold in the areas around the zipcode 95800. Most of the 3 bedrooms are sold in the area with zip code 95600. Only one area had 8 bedrooms on sale.
+* Very intersting positive correlation between beds and baths found.
+* Also very positive correlation found between sqft and baths; and sqft and beds
+* Most of the inexpensive property sold in the area around 95800. While Other areas sold realtively more exepnsive properties than the area under 95800.
+* Most of the properties sold are Residential and most properties are inexpensive.
+* Price and sq__ft doesnt hold a spreaded correlation.
+
+### Recoding and binning:
+Recoding the price and the sq__ft variable.
+
+```{r}
+RealEstateDf$priceCategory[RealEstateDf$price<=100000]<-"Inexpensive"
+RealEstateDf$priceCategory[RealEstateDf$price>100000 & RealEstateDf$price<=200000]<-"AveragePriced"
+RealEstateDf$priceCategory[RealEstateDf$price>200000]<-"Expensive"
+
+RealEstateDf$AreaCategory[RealEstateDf$sq__ft<1000]<-"Smaller"
+RealEstateDf$AreaCategory[RealEstateDf$sq__ft>1000 & RealEstateDf$sq__ft<2000] <-"Bigger"
+RealEstateDf$AreaCategory[RealEstateDf$sq__ft>2000]<-"Very Big"
+
+head(RealEstateDf, n=50)
+
+```
+
+### Frequency of the Price Category with respect to the cities
+```{r}
+require(dplyr)
+
+priceCategoryFreq<-select(RealEstateDf, city, priceCategory) %>%
+group_by(city, priceCategory) %>%
+summarise(count=n()) 
+
+show(priceCategoryFreq)
+
+```
+
+### Frequency of the Area Category with respect to the cities
+```{r}
+require(dplyr)
+
+areaCategoryFreq<-select(RealEstateDf, city, AreaCategory) %>%
+group_by(city,AreaCategory) %>%
+summarise(count=n())
+
+show(areaCategoryFreq)
+
+```
+
+### Distribution of property prices with respect to longitude and latitude
+This will help in locating area which has less priced propert and highly priced property
+```{r}
+require(ggplot2)
+require(reshape)
+require(gridExtra)
+
+longitudeMap<-ggplot(data = RealEstateDf) + geom_point(aes(x=longitude, y=priceCategory ))+ ggtitle("Distribution of property prices with respect to longitude")
+
+latitudeMap<-ggplot(data = RealEstateDf) + geom_point(aes(x=latitude, y=priceCategory ))+ ggtitle("Distribution of property prices with respect to latitude")
+
+grid.arrange(longitudeMap,latitudeMap, ncol=1 )
+```
