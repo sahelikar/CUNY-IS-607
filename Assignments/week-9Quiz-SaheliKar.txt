@@ -91,6 +91,6 @@ db.employee.find({Name:"Raoul Dewan"}).forEach(function(x){db.pastemployees.inse
 db.employee.remove(
     { Name : 'Raoul Dewan' }
     );
-    
+db.pastemployees.update({ Name : 'Raoul Dewan' },{$set : {"DepartYear":2014}});    
 db.pastemployees.find();
 db.employee.find();
