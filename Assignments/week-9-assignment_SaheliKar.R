@@ -2,8 +2,8 @@
 
 
 ##Command line import scripts into Mongodb is given in comments
-#mongoimport --db unitedstates --collection usdata --type csv --headerline --file "C:\districtdata.csv"
-#mongoimport --db unitedstates --collection usdata --type csv --headerline --file "C:\inhabitedterritorydata.csv"
+#mongoimport --db unitedstates --collection usdata --type tsv --headerline --file "C:\districtdata.txt"
+#mongoimport --db unitedstates --collection usdata --type tsv --headerline --file "C:\inhabitedterritorydata.txt"
 #mongoimport --db unitedstates --collection usdata --type csv --headerline --file "C:\statedata.csv"
 
 #install.packages("rmongodb")
