@@ -1,0 +1,289 @@
+Shikshya Abhiyan (Mission Education)
+========================================================
+
+Education is the key to unlock the golden door of freedom.
+
+For the final project I am planning to work on analyzing literacy data for all the states in India. The data for literacy in different states of India is obtained from http://data.gov.in/ . The data will help Shiksha Abhiyan (Mission Education), a charitable organization which will focus on emphasizing the education mostly for the primary level. They are planning to spread the word that primary education is the right for all. My analysis will analyze the data which state is doing well in growing the literacy rate and which state is failing to do so. The data will also analyze to help the literacy rate age wise and will try to identify if there is any drastic drop of percentage of students going to school from one age level to another age level. This will help Shiksha Abhiyan to take decision where and how to focus on their mission. They may try to find out the model from the growing state how they are growing literacy in the state. More interestingly they are trying to find out the student ratio gender wise. My analysis will find out if significantly lesser number of girl children are attending in particular area. They will focus that how education will help the society to advance irrespective of boy or girl. They will try to convince the parents to send their kids to school. Both the brothers and sisters from the same house should get the chance to study.
+
+The raw data is uploaded in Github at:
+
+<b>Selecting the required data into a dataframe, data transformation and cleaning </b>
+
+```{r}
+require(dplyr)
+library(plotrix)
+require(ggplot2)
+require(reshape2)
+require(RPostgreSQL)
+
+postgresdb<-"postgres"
+postgresUsername<-"postgres"
+postgresPassword<-"password"
+
+IndiaEducationDf<- read.csv(file.choose(), header=TRUE)
+
+#Function to clean the Area.Name and outputs the area name
+cleanStates<-function(input){
+  output=c()
+  for(val in input){
+    if(val!="INDIA"){
+      output=c(output,substr(val, 9, nchar(val)-4))
+    }
+    else
+      output=c(output,"INDIA")
+  }
+  return(output)
+}
+
+  
+
+getStateCode<-function(input){
+  stateCode_vec<-c()
+  region_vec<-c()
+  drv <- dbDriver("PostgreSQL")
+  con <- dbConnect(drv, dbname=postgresdb, postgresUsername, password=postgresPassword)
+  stateLookup <-dbReadTable(con,"india_state_code")
+
+  for(val in input){
+      stateCode<-filter(stateLookup, name==val) %>%
+        select(code) 
+      region<-filter(stateLookup, name==val) %>%
+        select(region) 
+        
+      stateCode_vec=c(stateCode_vec,stateCode)
+      region_vec=c(region_vec,region)
+      
+    }
+  ## Closes the connection
+dbDisconnect(con)
+
+## Frees all the resources on the driver
+dbUnloadDriver(drv)
+output<-list("stateCode_vec"=stateCode_vec, "region_vec"=region_vec)
+}  
+
+literacy_data<-filter(IndiaEducationDf, Age.group=="All ages")%>%
+  select(Area.Name:Literate...Females)
+literacy_data$Area.Name<-cleanStates(literacy_data$Area.Name)
+literacy_data<-cbind(StateCode = "", literacy_data)
+literacy_data<-cbind(Region = "", literacy_data)
+outputList<-getStateCode(literacy_data$Area.Name)
+literacy_data$StateCode = unlist(outputList$stateCode_vec)
+literacy_data$Region = unlist(outputList$region_vec)
+
+```
+<h3> Literacy data analysis in the states of India</h3>
+```{r}
+literacy_ratio<-filter(literacy_data, Total..Rural..Urban=="Total" )%>%
+  select(StateCode, Area.Name, Total...Persons, Literate...Persons ) %>%
+  mutate(Ratio=Literate...Persons/Total...Persons) %>%
+  arrange(desc(Ratio))
+
+show(literacy_ratio)
+
+l_ratio<-as.vector(as.matrix(filter(literacy_ratio, Area.Name!="INDIA")%>%
+  select(Ratio)))
+states<-as.vector(as.matrix(filter(literacy_ratio, Area.Name!="INDIA") %>%
+  select(Area.Name)))
+stateCodes<-as.vector(as.matrix(filter(literacy_ratio, Area.Name!="INDIA") %>%
+  select(StateCode)))
+
+```
+
+```{r fig.width=7, fig.height=6}
+barplot(l_ratio, main="Literacy Ratio", 
+    names.arg=stateCodes, col=c("blue","pink"))
+
+```
+Note: Please refer the state index below for the above plot
+```{r}
+show(states)
+```
+
+<b> The literacy ratio for the top two performing states</b>
+```{r}
+Kerala_literacy_ratio<-filter(literacy_data, Area.Name=="KERALA")%>%
+  select(Total..Rural..Urban, Total...Persons, Literate...Persons,Illiterate...Persons ) %>%
+  mutate(LiteracyRatio=Literate...Persons/Total...Persons) 
+show(Kerala_literacy_ratio)
+
+data1<-as.vector(as.matrix(filter(Kerala_literacy_ratio, Total..Rural..Urban!="Total")%>%
+  select(Literate...Persons, Illiterate...Persons)))
+
+lbls<-c("Literate Rural", "Literate Urban", "Illetrate Rural", "Illeterate Urban")
+
+
+Mizoram_literacy_ratio<-filter(literacy_data, Area.Name=="MIZORAM")%>%
+  select(Total..Rural..Urban, Total...Persons, Literate...Persons, Illiterate...Persons ) %>%
+  mutate(LiteracyRatio=Literate...Persons/Total...Persons) 
+show(Mizoram_literacy_ratio)
+
+data2<-as.vector(as.matrix(filter(Mizoram_literacy_ratio, Total..Rural..Urban!="Total")%>%
+  select(Literate...Persons, Illiterate...Persons)))
+
+```
+
+From the data we can see that the Urban and Rural data are comparable in Kerala. But there is significant difference in the literacy ratio in the Urban and Rural Area in Mizoram.
+
+<b> The literacy ratio for the average two performing states</b>
+
+```{r}
+WestBengal_literacy_ratio<-filter(literacy_data, Area.Name=="WEST BENGAL")%>%
+  select(Total..Rural..Urban, Total...Persons, Literate...Persons, Illiterate...Persons ) %>%
+  mutate(LiteracyRatio=Literate...Persons/Total...Persons) 
+show(WestBengal_literacy_ratio)
+
+data3<-as.vector(as.matrix(filter(WestBengal_literacy_ratio, Total..Rural..Urban!="Total")%>%
+  select(Literate...Persons, Illiterate...Persons)))
+
+
+Gujarat_literacy_ratio<-filter(literacy_data, Area.Name=="GUJARAT")%>%
+  select(Total..Rural..Urban, Total...Persons, Literate...Persons, Illiterate...Persons ) %>%
+  mutate(LiteracyRatio=Literate...Persons/Total...Persons) 
+show(Gujarat_literacy_ratio)
+
+data4<-as.vector(as.matrix(filter(Gujarat_literacy_ratio, Total..Rural..Urban!="Total")%>%
+  select(Literate...Persons, Illiterate...Persons)))
+
+```
+Both West Bengal and Gujarat needs to focus on the Rural part. Note that the population of the Rural part of West Bengal is much higher.
+
+<b> The literacy ratio for the least two performing states</b>
+
+```{r}
+Jharkhand_literacy_ratio<-filter(literacy_data, Area.Name=="JHARKHAND")%>%
+  select(Total..Rural..Urban, Total...Persons, Literate...Persons, Illiterate...Persons ) %>%
+  mutate(LiteracyRatio=Literate...Persons/Total...Persons)
+show(Jharkhand_literacy_ratio)
+
+data5<-as.vector(as.matrix(filter(Jharkhand_literacy_ratio, Total..Rural..Urban!="Total")%>%
+  select(Literate...Persons, Illiterate...Persons)))
+
+
+Bihar_literacy_ratio<-filter(literacy_data, Area.Name=="BIHAR")%>%
+  select(Total..Rural..Urban, Total...Persons, Literate...Persons, Illiterate...Persons ) %>%
+  mutate(LiteracyRatio=Literate...Persons/Total...Persons)
+show(Bihar_literacy_ratio)
+
+data6<-as.vector(as.matrix(filter(Bihar_literacy_ratio, Total..Rural..Urban!="Total")%>%
+  select(Literate...Persons, Illiterate...Persons)))
+```
+Jarkhand and Bihar seriously need to focus on the Rural part. Moreover the ratio of Urban part of Bihar is relatively lower than the other states.
+
+```{r fig.width=12, fig.height=14}
+par(mfrow=c(3,2))
+pie3D(data1, labels = lbls, main="Kerala Literacy  Pie Chart")
+pie3D(data2, labels = lbls, main="Mizoram lieteracy Pie Chart")
+pie3D(data3, labels = lbls, main="West Bengal literacy Pie Chart")
+pie3D(data4, labels = lbls, main="Gujarat literacy Pie Chart")
+pie3D(data5, labels = lbls, main="Jharkhand literacy Pie Chart")
+pie3D(data6, labels = lbls, main="Bihar literacy Pie Chart")
+```
+<h3>Lieteracy data analysis agewise in the states of India</h3>
+```{r}
+literacyDataByAge<-filter(IndiaEducationDf, Total..Rural..Urban=="Total" & Age.group!="All ages" & Age.group!="0-6") %>%
+  select(Age.group, Area.Name, Total...Persons, Literate...Persons) %>%
+  mutate(LiteracyRatio=Literate...Persons/Total...Persons)
+literacyDataByAge$Area.Name = cleanStates(literacyDataByAge$Area.Name)
+
+IndiaRatiobyAge<-filter(literacyDataByAge, Area.Name=="INDIA")%>%
+  select(Age.group, LiteracyRatio)
+
+Age.group<-IndiaRatiobyAge$Age.group
+LiteracyRatio<-IndiaRatiobyAge$LiteracyRatio
+```
+From the data provided above, we can see that in general there is percentage rise of literacy ratio with age. There may be certain criteria to mark a person as literate.
+```{r}
+barplot(LiteracyRatio,  main="Age wise literacy ratio graph in All India", 
+names.arg=Age.group, col=c("red","blue","pink","black","light green"))
+
+```
+
+<h3>Lieteracy data analysis genderwise</h3>
+```{r}
+literacyDataByGender<-filter(literacy_data, Total..Rural..Urban=="Total" & Age.group=="All ages") %>%
+  select( StateCode, Area.Name, Total...Persons:Literate...Females) %>%
+  mutate(MalePopRatio=Total...Males/Total...Persons, FemalePopRatio=Total...Females/Total...Persons, LiteracyRatioMale=Literate...Males/Total...Persons, LiteracyRatioFemale=Literate...Females/Total...Persons, LiterateMaleRatiWithin=Literate...Males/Total...Males, LiterateFemaleRatiWithin=Literate...Females/Total...Females)
+
+
+```
+
+<u>Comparison of literacy ratio genderwise</u>
+```{r fig.width=12, fig.height=8}
+
+ggplot( data=literacyDataByGender, aes(x=StateCode , y=MalePopRatio)) + 
+  geom_bar(stat="identity", fill="pink", colour="red")+
+  geom_bar(data=literacyDataByGender, aes(x=StateCode, y=LiteracyRatioMale),
+           stat="identity", fill="light blue", colour="blue")+ggtitle("Male population vs Male literacy")+
+     xlab("States")+ ylab("Male population vs male literacy")
+```
+
+```{r fig.width=12, fig.height=8}
+
+ggplot(main="Female population vs Female literacy", data=literacyDataByGender, aes(x=StateCode, y=FemalePopRatio), xlab("States"), ylab("Female population vs female literacy")) + 
+  geom_bar(stat="identity", fill="pink", colour="red")+
+  geom_bar(data=literacyDataByGender, aes(x=StateCode, y=LiteracyRatioFemale),
+           stat="identity", fill="light blue", colour="blue")+ggtitle("Female population vs Female literacy")+
+     xlab("States")+ ylab("Female population vs female literacy")
+
+```
+</br>
+From the plots above we can see that the female average female population is lesser than average male population. Overall male literacy is also better than the female literacy rate.
+Kerala is againg showing very good result in terms of female population and female literacy.
+
+<u>Comparison of Male and Female population in the states of India</u>
+
+```{r fig.width=12, fig.height=8}
+
+ggplot( data=literacyDataByGender, aes(x=StateCode , y=MalePopRatio)) + 
+  geom_bar(stat="identity", fill="pink", colour="red")+
+  geom_bar(data=literacyDataByGender, aes(x=StateCode, y=FemalePopRatio),
+           stat="identity", fill="turquoise", colour="blue")+ggtitle("Male population vs Female population")+
+     xlab("States")+ ylab("Male population vs Female population")
+
+```
+There is very concerning population ratio difference between male and female in DADRA & NAGAR HAVELI, DAMAN & DIU, and DELHI.
+Again Keral is exemplary. Kerala is the bright spot in our analysis and we need to find out how Kerala is doing different from the rest of the country.
+
+<u>Genderwise literacy analysis in the regions of India</u>
+```{r}
+genderLiteracyRatio<-filter(literacy_data, Total..Rural..Urban=="Total" & Age.group=="All ages" & StateCode!="IN") %>%
+  select(Region, Total...Persons,Literate...Males, Literate...Females) %>%
+mutate(FemaleLiteracyRatio=(Literate...Females/Total...Persons), MaleLiteracyRatio=(Literate...Males/Total...Persons))
+
+genderLiteracyRatio$FemaleLiteracyCategory[genderLiteracyRatio$FemaleLiteracyRatio<=0.2]<-"Very Poor"
+genderLiteracyRatio$FemaleLiteracyCategory[genderLiteracyRatio$FemaleLiteracyRatio<=0.3 & genderLiteracyRatio$FemaleLiteracyRatio>0.2]<-"Poor"
+genderLiteracyRatio$FemaleLiteracyCategory[genderLiteracyRatio$FemaleLiteracyRatio<=0.4 & genderLiteracyRatio$FemaleLiteracyRatio>0.3]<-"Average"
+genderLiteracyRatio$FemaleLiteracyCategory[genderLiteracyRatio$FemaleLiteracyRatio<=0.5 & genderLiteracyRatio$FemaleLiteracyRatio>0.4]<-"Good"
+genderLiteracyRatio$FemaleLiteracyCategory[genderLiteracyRatio$FemaleLiteracyRatio<=0.6 & genderLiteracyRatio$FemaleLiteracyRatio>0.5]<-"Vey Good"
+genderLiteracyRatio$FemaleLiteracyCategory[genderLiteracyRatio$FemaleLiteracyRatio>0.6]<-"Considerable"
+
+genderLiteracyRatio$MaleLiteracyCategory[genderLiteracyRatio$MaleLiteracyRatio<=0.2]<-"Very Poor"
+genderLiteracyRatio$MaleLiteracyCategory[genderLiteracyRatio$MaleLiteracyRatio<=0.3 & genderLiteracyRatio$MaleLiteracyRatio>0.2]<-"Poor"
+genderLiteracyRatio$MaleLiteracyCategory[genderLiteracyRatio$MaleLiteracyRatio<=0.4 & genderLiteracyRatio$MaleLiteracyRatio>0.3]<-"Average"
+genderLiteracyRatio$MaleLiteracyCategory[genderLiteracyRatio$MaleLiteracyRatio<=0.5 & genderLiteracyRatio$MaleLiteracyRatio>0.4]<-"Good"
+genderLiteracyRatio$MaleLiteracyCategory[genderLiteracyRatio$MaleLiteracyRatio<=0.6 & genderLiteracyRatio$MaleLiteracyRatio>0.5]<-"Vey Good"
+genderLiteracyRatio$MaleLiteracyCategory[genderLiteracyRatio$MaleLiteracyRatio>0.6]<-"Considerable"
+
+
+
+
+  
+```
+
+
+```{r fig.width=12, fig.height=8}
+
+p <- ggplot(genderLiteracyRatio, aes(MaleLiteracyCategory)) +
+        geom_histogram(binwidth = 1, fill="blue")+ggtitle("Male literacy region wise")
+p + facet_grid(. ~ Region)
+
+p <- ggplot(genderLiteracyRatio, aes(FemaleLiteracyCategory)) +
+        geom_histogram(binwidth = 1, fill="red")+ggtitle("Female literacy region wise")
+p + facet_grid(. ~ Region)
+```
+<h3>Conclusion</h3>
+From the analysis done above, we have noticed that Kerala is always excelling in case of literacy or regarding to equal gender ratio. Here Kerala is the bright spot. 
+In general though there is a tendency in the Urban areas people attending schools but in Rural need to improve a lot.
+Jharakhand and Bihar are lagging behind literacy. We need to seriously focus on a bunch of states for female literacy like Jharkhand, Bihar, Jammu and Kashmir, Uttar Pradesh and Rajasthan. Spreading awareness like how important is education in all our lives and how it will help the scoiety to improve if both girls and boys are educated.
+Serious concern in the ratio difference boys and girls. Eve oveall in India, the ratio difference is alarming. We need to sperad awarenes and need to take serious steps if any kind of bad malpratices are happening with girls.

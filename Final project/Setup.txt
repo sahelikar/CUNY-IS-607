@@ -1,0 +1,17 @@
+Setup - 
+
+1)Copy the Literacy_India.csv and State_codes.csv in your local drive. The Literacy_India.csv will be imported by the R scripts in the Shikshya Abhiyan.Rmd file. The State_codes.csv imported by india_state_code.sql script into the PostgresSQL.
+
+2)Change the file loaction path in the sql script to the folder where you copied the csv files.
+
+
+3)In the Rmd file change the connection parameters for the PostgresSQL in the variables postgresdb, postgresUsername, postgresPassword
+
+4) All the following packages need to be installed - 
+dplyr
+plotrix
+ggplot2
+reshape2
+RPostgreSQL
+
+5)
