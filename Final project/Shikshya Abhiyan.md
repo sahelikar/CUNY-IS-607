@@ -492,18 +492,6 @@ Kerala is againg showing very good result in terms of female population and fema
 Let us see the population for Kerala:
 
 
-```r
-filter(literacyDataByGender, StateCode=="KL" | StateCode=="CT")%>%
-select (Area.Name, Total...Males,Total...Females)
-```
-
-```
-##      Area.Name Total...Males Total...Females
-## 1 CHHATTISGARH      10474218        10359585
-## 2       KERALA      15468614        16372760
-```
-
-Please note that in Kerral female pop
 
 <u>Comparison of Male and Female population in the states of India</u>
 
@@ -516,10 +504,22 @@ ggplot( data=literacyDataByGender, aes(x=StateCode , y=MalePopRatio)) +
      xlab("States")+ ylab("Male population vs Female population")
 ```
 
-![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15.png) 
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
 There is very concerning population ratio difference between male and female in DADRA & NAGAR HAVELI, DAMAN & DIU, and DELHI.
 Again Keral is exemplary. Kerala is the bright spot in our analysis and we need to find out how Kerala is doing different from the rest of the country.
 
+```r
+show(filter(literacyDataByGender, StateCode=="KL" | StateCode=="CT")%>%
+select (Area.Name, Total...Males,Total...Females))
+```
+
+```
+##      Area.Name Total...Males Total...Females
+## 1 CHHATTISGARH      10474218        10359585
+## 2       KERALA      15468614        16372760
+```
+
+Please note that in Kerala female population is more than male population
 <u>Genderwise literacy analysis in the regions of India</u>
 
 ```r
