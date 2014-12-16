@@ -489,6 +489,22 @@ ggplot(main="Female population vs Female literacy", data=literacyDataByGender, a
 From the plots above we can see that the female average female population is lesser than average male population. Overall male literacy is also better than the female literacy rate.
 Kerala is againg showing very good result in terms of female population and female literacy.
 
+Let us see the population for Kerala:
+
+
+```r
+filter(literacyDataByGender, StateCode=="KL" | StateCode=="CT")%>%
+select (Area.Name, Total...Males,Total...Females)
+```
+
+```
+##      Area.Name Total...Males Total...Females
+## 1 CHHATTISGARH      10474218        10359585
+## 2       KERALA      15468614        16372760
+```
+
+Please note that in Kerral female pop
+
 <u>Comparison of Male and Female population in the states of India</u>
 
 
@@ -500,7 +516,7 @@ ggplot( data=literacyDataByGender, aes(x=StateCode , y=MalePopRatio)) +
      xlab("States")+ ylab("Male population vs Female population")
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15.png) 
 There is very concerning population ratio difference between male and female in DADRA & NAGAR HAVELI, DAMAN & DIU, and DELHI.
 Again Keral is exemplary. Kerala is the bright spot in our analysis and we need to find out how Kerala is doing different from the rest of the country.
 
@@ -534,7 +550,7 @@ p <- ggplot(genderLiteracyRatio, aes(MaleLiteracyCategory)) +
 p + facet_grid(. ~ Region)
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-161.png) 
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-171.png) 
 
 ```r
 p <- ggplot(genderLiteracyRatio, aes(FemaleLiteracyCategory)) +
@@ -542,7 +558,7 @@ p <- ggplot(genderLiteracyRatio, aes(FemaleLiteracyCategory)) +
 p + facet_grid(. ~ Region)
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-162.png) 
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-172.png) 
 <h3>Conclusion</h3>
 From the analysis done above, we have noticed that Kerala is always excelling in case of literacy or regarding to equal gender ratio. Here Kerala is the bright spot. 
 In general though there is a tendency in the Urban areas people attending schools but in Rural need to improve a lot.
