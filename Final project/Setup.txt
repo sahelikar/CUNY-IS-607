@@ -7,11 +7,11 @@ Setup -
 
 3)In the Rmd file change the connection parameters for the PostgresSQL in the variables postgresdb, postgresUsername, postgresPassword
 
-4) All the following packages need to be installed - 
+4) All the following packages need to be installed in R - 
 dplyr
 plotrix
 ggplot2
 reshape2
 RPostgreSQL
 
-5)
+5)After executing the Rmd file select the Literacy_India.csv from your local drive.

@@ -1,11 +1,12 @@
 Shikshya Abhiyan (Mission Education)
 ========================================================
-
+<h3>Author: Saheli Kar</h3>
+<h3>Acknowledgement: Course Professor - Andrew Catlin</h3>
 Education is the key to unlock the golden door of freedom.
 
 For the final project I am planning to work on analyzing literacy data for all the states in India. The data for literacy in different states of India is obtained from http://data.gov.in/ . The data will help Shiksha Abhiyan (Mission Education), a charitable organization which will focus on emphasizing the education mostly for the primary level. They are planning to spread the word that primary education is the right for all. My analysis will analyze the data which state is doing well in growing the literacy rate and which state is failing to do so. The data will also analyze to help the literacy rate age wise and will try to identify if there is any drastic drop of percentage of students going to school from one age level to another age level. This will help Shiksha Abhiyan to take decision where and how to focus on their mission. They may try to find out the model from the growing state how they are growing literacy in the state. More interestingly they are trying to find out the student ratio gender wise. My analysis will find out if significantly lesser number of girl children are attending in particular area. They will focus that how education will help the society to advance irrespective of boy or girl. They will try to convince the parents to send their kids to school. Both the brothers and sisters from the same house should get the chance to study.
 
-The raw data is uploaded in Github at:
+The raw data is uploaded in Github at: https://github.com/sahelikar/CUNY-IS-607/tree/master/Final%20project
 
 <b>Selecting the required data into a dataframe, data transformation and cleaning </b>
 
