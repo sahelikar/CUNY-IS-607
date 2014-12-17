@@ -250,7 +250,7 @@ ggplot( data=literacyDataByGender, aes(x=StateCode , y=MalePopRatio)) +
 There is very concerning population ratio difference between male and female in DADRA & NAGAR HAVELI, DAMAN & DIU, and DELHI.
 Again Keral is exemplary. Kerala is the bright spot in our analysis and we need to find out how Kerala is doing different from the rest of the country.
 ```{r}
-show(filter(literacyDataByGender, StateCode=="KL" | StateCode=="CT")%>%
+show(filter(literacyDataByGender, StateCode=="KL" | StateCode=="CT" | StateCode=="TN")%>%
 select (Area.Name, Total...Males,Total...Females))
 ```
 
@@ -282,7 +282,7 @@ genderLiteracyRatio$MaleLiteracyCategory[genderLiteracyRatio$MaleLiteracyRatio>0
 ```
 
 
-```{r fig.width=12, fig.height=8}
+```{r fig.width=10, fig.height=6}
 
 p <- ggplot(genderLiteracyRatio, aes(MaleLiteracyCategory)) +
         geom_histogram(binwidth = 1, fill="blue")+ggtitle("Male literacy region wise")

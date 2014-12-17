@@ -509,7 +509,7 @@ There is very concerning population ratio difference between male and female in 
 Again Keral is exemplary. Kerala is the bright spot in our analysis and we need to find out how Kerala is doing different from the rest of the country.
 
 ```r
-show(filter(literacyDataByGender, StateCode=="KL" | StateCode=="CT")%>%
+show(filter(literacyDataByGender, StateCode=="KL" | StateCode=="CT" | StateCode=="TN")%>%
 select (Area.Name, Total...Males,Total...Females))
 ```
 
@@ -517,6 +517,7 @@ select (Area.Name, Total...Males,Total...Females))
 ##      Area.Name Total...Males Total...Females
 ## 1 CHHATTISGARH      10474218        10359585
 ## 2       KERALA      15468614        16372760
+## 3   TAMIL NADU      31400909        31004770
 ```
 
 Please note that in Kerala female population is more than male population
